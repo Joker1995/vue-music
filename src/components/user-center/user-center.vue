@@ -5,10 +5,9 @@
         <i class="icon-back"></i>
       </div>
       <div class="switches-wrapper">
-        <switches @switch="switchItem" :switches="switches" :currentIndex="currentIndex">
-        </switches>
+        <switches @switch="switchItem" :switches="switches" :currentIndex="currentIndex"></switches>
       </div>
-      <div class="play-btn" @click="random" ref="playBtn">
+      <div ref="playBtn" class="play-btn" @click="random">
         <i class="icon-play"></i>
         <span class="text">随机播放全部</span>
       </div>
@@ -18,7 +17,7 @@
             <song-list :songs="favoriteList" @select="selectSong"></song-list>
           </div>
         </scroll>
-        <scroll ref="playlist" class="list-scroll" v-if="currentIndex===1" :data="playHistory">
+        <scroll ref="playList" class="list-scroll" v-if="currentIndex===1" :data="playHistory">
           <div class="list-inner">
             <song-list :songs="playHistory" @select="selectSong"></song-list>
           </div>
@@ -30,6 +29,7 @@
     </div>
   </transition>
 </template>
+
 <script type="text/ecmascript-6">
   import Switches from 'base/switches/switches'
   import Scroll from 'base/scroll/scroll'
@@ -39,29 +39,30 @@
   import {mapGetters, mapActions} from 'vuex'
   import {playlistMixin} from 'common/js/mixin'
 
-  export default{
-    mixins:[playlistMixin],
-    data(){
-      return(){
-        currentIndex:0,
-        switches:[
+  export default {
+    mixins: [playlistMixin],
+    data() {
+      return {
+        currentIndex: 0,
+        switches: [
           {
-            name:'我喜欢的'
-          },{
-            name:'最近听的'
+            name: '我喜欢的'
+          },
+          {
+            name: '最近听的'
           }
         ]
       }
     },
-    computed:{
-      noResult(){
-        if(this.currentIndex===0){
+    computed: {
+      noResult() {
+        if (this.currentIndex === 0) {
           return !this.favoriteList.length
-        }else{
+        } else {
           return !this.playHistory.length
         }
       },
-      noResultDesc(){
+      noResultDesc() {
         if (this.currentIndex === 0) {
           return '暂无收藏歌曲'
         } else {
@@ -73,40 +74,40 @@
         'playHistory'
       ])
     },
-    methods:{
-        handlePlaylist(playlist){
-          const bottom=playlist.length>0?'60px':''
-          this.$refs.listWrapper.style.bottom=bottom
-          this.$refs.favoriteList && this.$refs.favoriteList.refresh()
-          this.$refs.playList && this.$refs.playList.refresh()
-        },
-        switchItem(index){
-          this.currentIndex=index
-        },
-        selectSong(song){
-          this.insertSong(new Song(song))
-        },
-        back(){
-          this.$router.back()
-        },
-        random(){
-          let list=this.currentIndex===0?this.favoriteList:this.playHistory
-          if(list.length===0){
-            return
-          }
-          list=list.map((song)=>{
-            return new Song(song)
-          })
-          this.randomPlay({
-            list
-          })
-        },
-        ...mapActions([
-          'insertSong',
-          'randomPlay'
-        ])
+    methods: {
+      handlePlaylist(playlist) {
+        const bottom = playlist.length > 0 ? '60px' : ''
+        this.$refs.listWrapper.style.bottom = bottom
+        this.$refs.favoriteList && this.$refs.favoriteList.refresh()
+        this.$refs.playList && this.$refs.playList.refresh()
+      },
+      switchItem(index) {
+        this.currentIndex = index
+      },
+      selectSong(song) {
+        this.insertSong(new Song(song))
+      },
+      back() {
+        this.$router.back()
+      },
+      random() {
+        let list = this.currentIndex === 0 ? this.favoriteList : this.playHistory
+        if (list.length === 0) {
+          return
+        }
+        list = list.map((song) => {
+          return new Song(song)
+        })
+        this.randomPlay({
+          list
+        })
+      },
+      ...mapActions([
+        'insertSong',
+        'randomPlay'
+      ])
     },
-    components:{
+    components: {
       Switches,
       Scroll,
       SongList,
@@ -114,6 +115,7 @@
     }
   }
 </script>
+
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
 

@@ -1,9 +1,9 @@
 <template>
-    <transition>
-      <music-list :title="title" :bg-image="bgImage" :songs="songs">
-      </music-list>
-    </transition>
+  <transition name="slide">
+    <music-list :title="title" :bg-image="bgImage" :songs="songs"></music-list>
+  </transition>
 </template>
+
 <script type="text/ecmascript-6">
   import MusicList from 'components/music-list/music-list'
   import {getSongList} from 'api/recommend'
@@ -11,53 +11,54 @@
   import {mapGetters} from 'vuex'
   import {createSong} from 'common/js/song'
 
-  export default{
-    computed:{
-      title(){
+  export default {
+    computed: {
+      title() {
         return this.disc.dissname
       },
-      bgImage(){
+      bgImage() {
         return this.disc.imgurl
       },
       ...mapGetters([
         'disc'
       ])
     },
-    data(){
+    data() {
       return {
-        songs:[]
+        songs: []
       }
     },
-    created(){
+    created() {
       this._getSongList()
     },
-    methods:{
-      _getSongList(){
-        if(!this.disc.dissid){
+    methods: {
+      _getSongList() {
+        if (!this.disc.dissid) {
           this.$router.push('/recommend')
           return
         }
-        getSongList(this.disc.dissid).then((res)=>{
-          if(res.code===ERR_OK){
-            this.songs=this._normalizeSongs(res.cdlist[0].songlist)
+        getSongList(this.disc.dissid).then((res) => {
+          if (res.code === ERR_OK) {
+            this.songs = this._normalizeSongs(res.cdlist[0].songlist)
           }
         })
       },
-      _normalizeSongs(list){
-        let ret=[]
-        list.forEach((musicData)=>{
-          if(musicData.songid && musicData.albummid){
+      _normalizeSongs(list) {
+        let ret = []
+        list.forEach((musicData) => {
+          if (musicData.songid && musicData.albummid) {
             ret.push(createSong(musicData))
           }
         })
         return ret
       }
     },
-    components:{
+    components: {
       MusicList
     }
   }
 </script>
+
 <style scoped lang="stylus" rel="stylesheet/stylus">
   .slide-enter-active, .slide-leave-active
     transition: all 0.3s

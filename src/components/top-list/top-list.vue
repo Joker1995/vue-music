@@ -3,6 +3,7 @@
     <music-list :rank="rank" :title="title" :bg-image="bgImage" :songs="songs"></music-list>
   </transition>
 </template>
+
 <script type="text/ecmascript-6">
   import MusicList from 'components/music-list/music-list'
   import {getMusicList} from 'api/rank'
@@ -10,13 +11,13 @@
   import {mapGetters} from 'vuex'
   import {createSong} from 'common/js/song'
 
-  export default{
-    computed:{
-      title(){
+  export default {
+    computed: {
+      title() {
         return this.topList.topTitle
       },
-      bgImage(){
-        if(this.songs.length){
+      bgImage() {
+        if (this.songs.length) {
           return this.songs[0].image
         }
         return ''
@@ -25,43 +26,44 @@
         'topList'
       ])
     },
-    data(){
+    data() {
       return {
-        songs:[],
-        rank:true
+        songs: [],
+        rank: true
       }
     },
-    created(){
+    created() {
       this._getMusicList()
     },
-    methods:{
-      _getMusicList(){
-        if(!this.topList.id){
+    methods: {
+      _getMusicList() {
+        if (!this.topList.id) {
           this.$router.push('/rank')
           return
         }
-        getMusicList(this.topList.id).then((res)=>{
-          if(res.code===ERR_OK){
-            this.songs=this._normalizeSongs(res.songlist)
+        getMusicList(this.topList.id).then((res) => {
+          if (res.code === ERR_OK) {
+            this.songs = this._normalizeSongs(res.songlist)
           }
         })
       },
-      _normalizeSongs(list){
-        let ret=[]
-        list.forEach((item)=>{
-          const musicData=item.data
-          if(musicData.songid && musicData.albummid){
+      _normalizeSongs(list) {
+        let ret = []
+        list.forEach((item) => {
+          const musicData = item.data
+          if (musicData.songid && musicData.albummid) {
             ret.push(createSong(musicData))
           }
         })
         return ret
       }
     },
-    components:{
+    components: {
       MusicList
     }
   }
 </script>
+
 <style scoped lang="stylus" rel="stylesheet/stylus">
   .slide-enter-active, .slide-leave-active
     transition: all 0.3s ease

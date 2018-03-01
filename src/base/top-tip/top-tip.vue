@@ -5,33 +5,35 @@
     </div>
   </transition>
 </template>
+
 <script type="text/ecmascript-6">
-  export default{
-    props:{
-      delay:{
-        type:Number,
-        default:2000
+  export default {
+    props: {
+      delay: {
+        type: Number,
+        default: 2000
       }
     },
-    data(){
+    data() {
       return {
-        showFlag:false
+        showFlag: false
       }
     },
-    methods:{
-      show(){
-        this.showFlag=true
+    methods: {
+      show() {
+        this.showFlag = true
         clearTimeout(this.timer)
-        this.timer=setTimeout(()=>{
+        this.timer = setTimeout(() => {
           this.hide()
-        },this.delay)
+        }, this.delay)
       },
-      hide(){
-        this.showFlag=false
+      hide() {
+        this.showFlag = false
       }
     }
   }
 </script>
+
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
 

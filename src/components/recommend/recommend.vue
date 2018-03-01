@@ -2,11 +2,11 @@
   <div class="recommend" ref="recommend">
     <scroll ref="scroll" class="recommend-content" :data="discList">
       <div>
-        <div class="slider-wrapper" v-if="recommend.length" ref="sliderWrapper">
+        <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
           <slider>
             <div v-for="item in recommends">
               <a :href="item.linkUrl">
-                <img :src="item.picUrl" class="needsclick" @load="loadImage">
+                <img class="needsclick" @load="loadImage" :src="item.picUrl">
               </a>
             </div>
           </slider>
@@ -16,7 +16,7 @@
           <ul>
             <li @click="selectItem(item)" v-for="item in discList" class="item">
               <div class="icon">
-                <img v-lazy="item.imgurl" width="60" height="60">
+                <img width="60" height="60" v-lazy="item.imgurl">
               </div>
               <div class="text">
                 <h2 class="name" v-html="item.creator.name"></h2>
@@ -33,71 +33,75 @@
     <router-view></router-view>
   </div>
 </template>
+
 <script type="text/ecmascript-6">
   import Slider from 'base/slider/slider'
   import Loading from 'base/loading/loading'
   import Scroll from 'base/scroll/scroll'
-  import {getRecommend,getDiscList} from 'api/recommend'
+  import {getRecommend, getDiscList} from 'api/recommend'
   import {playlistMixin} from 'common/js/mixin'
   import {ERR_OK} from 'api/config'
   import {mapMutations} from 'vuex'
 
-  export default{
-    mixins:[playlistMixin],
-    data(){
+  export default {
+    mixins: [playlistMixin],
+    data() {
       return {
-        recommends:[],
-        discList:[]
+        recommends: [],
+        discList: []
       }
     },
-    created(){
+    created() {
       this._getRecommend()
+
       this._getDiscList()
     },
-    methods:{
-      handlePlaylist(playlist){
-        const bottom=playlist.length>0?'60px':''
-        this.$refs.recommend.style.bottom=bottom
+    methods: {
+      handlePlaylist(playlist) {
+        const bottom = playlist.length > 0 ? '60px' : ''
+
+        this.$refs.recommend.style.bottom = bottom
         this.$refs.scroll.refresh()
       },
-      loadImage(){
-        if(!this.checkloaded){
-          this.checkloaded=true
+      loadImage() {
+        if (!this.checkloaded) {
+          this.checkloaded = true
           this.$refs.scroll.refresh()
         }
       },
-      selectItem(item){
+      selectItem(item) {
         this.$router.push({
-          path:`/recommend/${item.dissid}`
+          path: `/recommend/${item.dissid}`
         })
         this.setDisc(item)
       },
-      _getRecommend(){
-        getRecommend().then((res)=>{
-          if(res.code===ERR_OK){
-            this.recommends=res.data.slider
+      _getRecommend() {
+        getRecommend().then((res) => {
+          if (res.code === ERR_OK) {
+            this.recommends = res.data.slider
           }
         })
       },
-      _getDiscList(){
-        getDiscList().then((res)=>{
-          if(res.code===ERR_OK){
-            this.discList=res.data.list
+      _getDiscList() {
+        getDiscList().then((res) => {
+          if (res.code === ERR_OK) {
+            this.discList = res.data.list
           }
         })
       },
       ...mapMutations({
-        setDisc:'SET_DISC'
+        setDisc: 'SET_DISC'
       })
     },
-    components:{
+    components: {
       Slider,
       Loading,
       Scroll
     }
   }
 </script>
-<style scpoed lang="stylus" rel="stylesheet/stylus">
+
+<style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
 
   .recommend

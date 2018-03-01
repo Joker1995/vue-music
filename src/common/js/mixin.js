@@ -1,6 +1,6 @@
-import { mapGetters, mapMutations, mapActions} from 'vuex'
-import { playMode } from 'common/js/config'
-import { shuffle } from 'common/js/util'
+import {mapGetters, mapMutations, mapActions} from 'vuex'
+import {playMode} from 'common/js/config'
+import {shuffle} from 'common/js/util'
 
 export const playlistMixin = {
   computed: {
@@ -14,7 +14,7 @@ export const playlistMixin = {
   activated() {
     this.handlePlaylist(this.playlist)
   },
-  watch() {
+  watch: {
     playlist(newVal) {
       this.handlePlaylist(newVal)
     }
@@ -39,49 +39,49 @@ export const playerMixin = {
       'favoriteList'
     ])
   },
-  methods:{
-    changeMode(){
-      const mode=(this.mode+1)%3
+  methods: {
+    changeMode() {
+      const mode = (this.mode + 1) % 3
       this.setPlayMode(mode)
-      let list=null
-      if(mode===playMode.random){
-        list=shuffle(this.sequenceList)
-      }else{
-        list=this.sequenceList
+      let list = null
+      if (mode === playMode.random) {
+        list = shuffle(this.sequenceList)
+      } else {
+        list = this.sequenceList
       }
       this.resetCurrentIndex(list)
       this.setPlaylist(list)
     },
-    resetCurrentIndex(list){
-      let index=list.findIndex((item)=>{
-        return item.id===this.currentSong.id
+    resetCurrentIndex(list) {
+      let index = list.findIndex((item) => {
+        return item.id === this.currentSong.id
       })
       this.setCurrentIndex(index)
     },
-    toggleFavorite(song){
-      if(this.isFavorite(song)){
+    toggleFavorite(song) {
+      if (this.isFavorite(song)) {
         this.deleteFavoriteList(song)
-      }else{
+      } else {
         this.saveFavoriteList(song)
       }
     },
-    getFavoriteIcon(song){
-      if(this.isFavorite(song)){
+    getFavoriteIcon(song) {
+      if (this.isFavorite(song)) {
         return 'icon-favorite'
       }
       return 'icon-not-favorite'
     },
-    isFavorite(song){
-      const index=this.favoriteList.findIndex((item)=>{
-        return item.id===song.id
+    isFavorite(song) {
+      const index = this.favoriteList.findIndex((item) => {
+        return item.id === song.id
       })
-      return index>-1
+      return index > -1
     },
     ...mapMutations({
-      setPlayMode:'SET_PLAY_MODE',
-      setPlaylist:'SET_PLAYLIST',
-      setCurrentIndex:'SET_CURRENT_INDEX',
-      setPlayingState:'SET_PALYING_STATE'
+      setPlayMode: 'SET_PLAY_MODE',
+      setPlaylist: 'SET_PLAYLIST',
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayingState: 'SET_PLAYING_STATE'
     }),
     ...mapActions([
       'saveFavoriteList',
@@ -90,29 +90,29 @@ export const playerMixin = {
   }
 }
 
-export const searchMixin={
-  data(){
+export const searchMixin = {
+  data() {
     return {
-      query:'',
-      refreshDelay:120
+      query: '',
+      refreshDelay: 120
     }
   },
-  computed:{
+  computed: {
     ...mapGetters([
       'searchHistory'
     ])
   },
-  methods:{
-    onQueryChange(query){
-      this.query=query
+  methods: {
+    onQueryChange(query) {
+      this.query = query
     },
-    blurInput(){
+    blurInput() {
       this.$refs.searchBox.blur()
     },
-    addQuery(query){
+    addQuery(query) {
       this.$refs.searchBox.setQuery(query)
     },
-    saveSearch(){
+    saveSearch() {
       this.saveSearchHistory(this.query)
     },
     ...mapActions([

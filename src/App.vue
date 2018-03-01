@@ -13,13 +13,14 @@
   import MHeader from 'components/m-header/m-header'
   import Player from 'components/player/player'
   import Tab from 'components/tab/tab'
-export default {
-  components:{
-    MHeader,
-    Player,
-    Tab
+
+  export default {
+    components: {
+      MHeader,
+      Tab,
+      Player
+    }
   }
-}
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">

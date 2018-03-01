@@ -6,13 +6,18 @@ import fastclick from 'fastclick'
 import VueLazyload from 'vue-lazyload'
 import store from './store'
 
-import 'common/stylus/index.stylus'
+import 'common/stylus/index.styl'
+
+/* eslint-disable no-unused-vars */
+// import vConsole from 'vconsole'
 
 fastclick.attach(document.body)
 
-vue.use(VueLazyload,{
+Vue.use(VueLazyload, {
   loading: require('common/image/default.png')
 })
+
+/* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,

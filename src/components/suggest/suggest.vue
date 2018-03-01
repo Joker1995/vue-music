@@ -1,6 +1,12 @@
 <template>
-  <scroll ref="suggest" class="suggest" :data="result" :pullup="pullup" :beforeScroll="beforeScroll"
-          @scrollToEnd="searchMore" @beforeScroll="listScroll">
+  <scroll ref="suggest"
+          class="suggest"
+          :data="result"
+          :pullup="pullup"
+          :beforeScroll="beforeScroll"
+          @scrollToEnd="searchMore"
+          @beforeScroll="listScroll"
+  >
     <ul class="suggest-list">
       <li @click="selectItem(item)" class="suggest-item" v-for="item in result">
         <div class="icon">
@@ -12,11 +18,12 @@
       </li>
       <loading v-show="hasMore" title=""></loading>
     </ul>
-    <div class="no-result-wrapper" v-show="!hasMore && !result.length">
-      <no-result title='抱歉，暂无搜索结果'></no-result>
+    <div v-show="!hasMore && !result.length" class="no-result-wrapper">
+      <no-result title="抱歉，暂无搜索结果"></no-result>
     </div>
   </scroll>
 </template>
+
 <script type="text/ecmascript-6">
   import Scroll from 'base/scroll/scroll'
   import Loading from 'base/loading/loading'
@@ -24,135 +31,136 @@
   import {search} from 'api/search'
   import {ERR_OK} from 'api/config'
   import {createSong} from 'common/js/song'
-  import {mapMutations,mapActions} from 'vuex'
+  import {mapMutations, mapActions} from 'vuex'
   import Singer from 'common/js/singer'
 
-  const TYPE_SINGER='singer'
-  const perpage=20
+  const TYPE_SINGER = 'singer'
+  const perpage = 20
 
-  export default{
-    props:{
-      showSinger:{
-        type:Boolean,
-        default:true
+  export default {
+    props: {
+      showSinger: {
+        type: Boolean,
+        default: true
       },
-      query:{
-        type:String,
-        default:''
+      query: {
+        type: String,
+        default: ''
       }
     },
-    data(){
+    data() {
       return {
-        page:1
-        pullup:true,
-        beforeScroll:true,
-        hasMore:true,
-        result:[]
+        page: 1,
+        pullup: true,
+        beforeScroll: true,
+        hasMore: true,
+        result: []
       }
     },
-    methods:{
-      refresh(){
+    methods: {
+      refresh() {
         this.$refs.suggest.refresh()
       },
-      search(){
-        this.page=1
-        this.hasMore=true
-        this.$refs.suggest.scrollTo(0,0)
-        search(this.query,this.page,this.showSinger,perpage).then((res)=>{
-          if(res.code===ERR_OK){
-            this.result=this._genResult(res.data)
+      search() {
+        this.page = 1
+        this.hasMore = true
+        this.$refs.suggest.scrollTo(0, 0)
+        search(this.query, this.page, this.showSinger, perpage).then((res) => {
+          if (res.code === ERR_OK) {
+            this.result = this._genResult(res.data)
             this._checkMore(res.data)
           }
         })
       },
-      searchMore(){
-        if(!this.hasMore){
+      searchMore() {
+        if (!this.hasMore) {
           return
         }
         this.page++
-        search(this.query,this.page,this.showSinger,perpage).then((res)=>{
-          if(res.code===ERR_OK){
-            this.result=this.result.concat(this._genResult(res.data))
+        search(this.query, this.page, this.showSinger, perpage).then((res) => {
+          if (res.code === ERR_OK) {
+            this.result = this.result.concat(this._genResult(res.data))
             this._checkMore(res.data)
           }
         })
       },
-      listScroll(){
+      listScroll() {
         this.$emit('listScroll')
       },
-      selectItem(item){
-        if(item.type===TYPE_SINGER){
-          const singer=new Singer({
-            id:item.singermid,
-            name:item.singername
+      selectItem(item) {
+        if (item.type === TYPE_SINGER) {
+          const singer = new Singer({
+            id: item.singermid,
+            name: item.singername
           })
           this.$router.push({
-            path:`/search/${singer.id}`
+            path: `/search/${singer.id}`
           })
           this.setSinger(singer)
-        }else{
+        } else {
           this.insertSong(item)
         }
-        this.$emit('select',item)
+        this.$emit('select', item)
       },
-      getDisplayName(item){
-        if(item.type===TYPE_SINGER){
+      getDisplayName(item) {
+        if (item.type === TYPE_SINGER) {
           return item.singername
-        }else{
+        } else {
           return `${item.name}-${item.singer}`
         }
       },
-      getIconCls(item){
-        if(item.type===TYPE_SINGER){
+      getIconCls(item) {
+        if (item.type === TYPE_SINGER) {
           return 'icon-mine'
-        }else{
+        } else {
           return 'icon-music'
         }
       },
-      _genResult(data){
-        let ret=[]
-        if(data.zhida && data.zhida.singerid){
-          ret.push({...data.zhida,...{type:TYPE_SINGER}})
+      _genResult(data) {
+        let ret = []
+        if (data.zhida && data.zhida.singerid) {
+          ret.push({...data.zhida, ...{type: TYPE_SINGER}})
         }
-        if(data.song){
-          ret=ret.concat(this._normalizeSongs(data.song.list))
+        if (data.song) {
+          ret = ret.concat(this._normalizeSongs(data.song.list))
         }
         return ret
       },
-      _normalizeSongs(list){
-        let ret=[]
-        list.forEach((musicData)=>{
-          if(musicData.songid && musicData.albummid){
+      _normalizeSongs(list) {
+        let ret = []
+        list.forEach((musicData) => {
+          if (musicData.songid && musicData.albummid) {
             ret.push(createSong(musicData))
           }
         })
         return ret
       },
-      _checkMore(data){
-        const song=data.song
-        if(!song.list.length || (song.curnum+song.curpage * perpage)>song.totalnum){
-          this.hasMore=false
+      _checkMore(data) {
+        const song = data.song
+        if (!song.list.length || (song.curnum + song.curpage * perpage) > song.totalnum) {
+          this.hasMore = false
         }
       },
       ...mapMutations({
-        setSinger:'SET_SINGER'
+        setSinger: 'SET_SINGER'
       }),
       ...mapActions([
         'insertSong'
       ])
     },
-    watch:{
-      query(newQuery){
+    watch: {
+      query(newQuery) {
         this.search(newQuery)
       }
     },
-    components:{
+    components: {
       Scroll,
       Loading,
       NoResult
     }
   }
 </script>
+
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
   @import "~common/stylus/mixin"
